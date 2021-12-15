@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="04682929-176b-4a12-b2cc-14f284102f54" basePath="/getTimeZoneInfo">
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="7f0a2ddf-a7b5-4e4e-88d3-a13c2a222915" basePath="/api/" >
+		<http:request-connection host="worldtimeapi.org" port="80" />
+	</http:request-config>
+	<flow name="error-demoFlow" doc:id="0146976d-3204-46bc-a4ef-110c0682952a" >
+		<http:listener doc:name="Listener" doc:id="b5cf39df-74bb-45fe-81c9-65774c8fa82e" config-ref="HTTP_Listener_config" path="/{region}/{city}">
+			<http:error-response >
+				<http:body ><![CDATA[#[output text/plain --- 
+payload]]]></http:body>
+			</http:error-response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="cc0ea193-25e5-46ef-ade3-8418ddf7afae" message="#[(attributes.uriParams.region default '') ++ (attributes.uriParams.city default '')]" />
+		<http:request method="GET" doc:name="Request" doc:id="277975e5-e979-4be3-bd03-da5ecec1ff20" config-ref="HTTP_Request_configuration" path="/{region}/{city}">
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	region: attributes.uriParams.region, 
+	city: attributes.uriParams.city
+	
+}]]]></http:uri-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="ff128f80-770e-4895-abaf-d1e72e3c57e8" message="End of flowo"/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="e46dae83-39a2-445c-803a-b136f95e2f8e" type="HTTP:NOT_FOUND">
+				<ee:transform doc:name="Transform Message" doc:id="0c8675cb-3e36-4d21-ab06-680eef4912e4" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

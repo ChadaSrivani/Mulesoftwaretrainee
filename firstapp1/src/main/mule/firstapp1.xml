@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="4a500cc6-9143-49de-825c-9d914c6beaf8" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	
+	<flow name="firstapp1Flow" doc:id="14736a47-63bb-4c0b-9d39-e606341a51f1" >
+		<http:listener doc:name="Listener" doc:id="55f713e1-9826-4281-af1a-62d2f7ff06ff" config-ref="HTTP_Listener_config" path="/firstapp"/>
+		<set-payload value="firstapp" doc:name="Hellofirstapp" doc:id="c01f1b90-07a7-4e62-8377-f41fdd5f8c95" />
+	</flow>
+</mule>
