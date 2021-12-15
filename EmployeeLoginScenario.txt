@@ -1,0 +1,27 @@
+
+Employee Login Screen 
+
+A)Pre-requirements:
+       employee id
+       employee credentials
+B)Scenario
+ 
+1. DXC Email Id : Enter DXC work profile email
+2. Password: Enter password
+3.Forgot Password : Click on forgot password if you don't remember password
+4. click on login for logging in
+5. If incorrect: Error Message and limit on total no of unsuccesful login attempts will appear
+6. If correct: It will prompt for Verification code on registered mobile number + PIN
+7. Login successful
+
+
+ 
+
+
+
+
+
+
+
+
+
