@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cd15bd84-5e7a-4fab-87f0-78871fde5ce4" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="flowone1Flow" doc:id="e804c3f2-f5a8-439e-9b1d-49f82ff5c509" >
+		<http:listener doc:name="GET/flowone1" doc:id="0649f981-fcac-42ac-b0a0-4f97ad384bbb" config-ref="HTTP_Listener_config" path="/flowone1"/>
+		<flow-ref doc:name="Flow References" doc:id="971e0b77-3b9f-4c63-9ee9-9e13f2b0beb8" name="flowone1Flow1"/>
+		<set-payload value="flowone1 payload" doc:name="flowone" doc:id="a105eb79-e141-40b6-9454-e73484317609" />
+	</flow>
+	<flow name="flowone1Flow1" doc:id="0171582d-19c2-4efe-9af2-5133c1be1533" >
+		<http:listener doc:name="GET /flowtwo2" doc:id="9f3f72ab-90dc-4778-a27d-9e897992f67b" config-ref="HTTP_Listener_config" path="/flowtwo2" allowedMethods="GET"/>
+		<ee:transform doc:name="Transform Message" doc:id="7eb429e5-3dbc-4297-a0bc-ce23b00aefc9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+import * from dw::Runtime
+output application/java
+---
+{
+	"user" : 1
+}
+wait 5000]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5c9e149c-019d-48f5-bfea-7d4a70a94e08" message="flowtwo invoked from flowone" doc:description="flowtwo logger message-logic from flowone"/>
+		<set-payload value="flow2 payload" doc:name="flowtwo" doc:id="ab558b89-c980-4a63-aa60-e399af20d97e" />
+	</flow>
+</mule>
