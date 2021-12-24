@@ -1,5 +1,0 @@
-{
-  "airline": "Air India",
-   "flightcode": "100",
-   "from": "HYD"
-}
