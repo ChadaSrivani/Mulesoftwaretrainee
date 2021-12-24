@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3c378d1a-f1a8-465f-8612-fcd6ccae24f4" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<wsc:config name="Web_Service_Consumer_Config" doc:name="Web Service Consumer Config" doc:id="f7441370-f60f-4e66-b833-782b82196082" >
+		<wsc:connection wsdlLocation="https://github.com/ChadaSrivani/Mulesoftwaretrainee/blob/main/sample.wsdl" />
+	</wsc:config>
+	<flow name="ws-cons-soapFlow" doc:id="9935dd3b-c796-418d-9ac4-9749f5dd5b7e" >
+		<http:listener doc:name="Listener" doc:id="ad047e9a-e14e-46b5-b6a9-0da26775d011" config-ref="HTTP_Listener_config" path="/convert"/>
+		<set-variable value="" doc:name="Set Variable" doc:id="ac208893-f5c3-42e9-a005-b458cce85b3b" />
+		<ee:transform doc:name="Transform Message" doc:id="aa29dc63-8ac1-4412-aa6d-04e010fbe32f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<wsc:consume doc:name="Addwebservices" doc:id="022cf8d8-ac3a-475e-91d0-63e092d3a0ef" config-ref="Web_Service_Consumer_Config" operation="Add"/>
+		<logger level="INFO" doc:name="Logger" doc:id="571e094c-7f33-4154-a40c-afeff8a7c30c" />
+		<ee:transform doc:name="Transform Message" doc:id="b5fcbe7a-3ef1-41eb-9f78-2b5476a98956" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler />
+	</flow>
+</mule>
