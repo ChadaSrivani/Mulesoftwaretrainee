@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9509befb-7e56-4ed9-b443-8d6f69155d35" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="batchprocessingFlow" doc:id="aecd7f1d-e5bd-4b36-9bcb-61ff7f9c95a3" >
+		<http:listener doc:name="Listener" doc:id="ab0b9870-a98c-407b-b69c-54f3d025b800" config-ref="HTTP_Listener_config" path="/batchpath">
+			<http:response >
+				<http:body ><![CDATA[Batch job completed]]></http:body>
+			</http:response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="dbcb2907-d84d-449d-a1d6-49b0f0786ea1" message="Logging information-------Batchjob starting here..Thepayload is *[payload]"/>
+		<batch:job jobName="batchprocessingBatch_Job" doc:id="5d1841be-7f16-4d43-a5ee-e51396d27d20" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="d7aa9d0c-098a-42b8-94ef-34d87807ec0d" >
+					<logger level="INFO" doc:name="Logger" doc:id="c855d434-6e48-4f1f-8a44-5960b237d41f" message="Log.....Batch Step Completed"/>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="e626078a-51d3-4868-a4b3-e39d15bcdbd9" message="Log---Entire Batch job gets Completed..."/>
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>
