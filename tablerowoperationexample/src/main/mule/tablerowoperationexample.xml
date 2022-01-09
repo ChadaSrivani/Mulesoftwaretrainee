@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="dc0dff68-72e5-4518-b81a-4bdc98c786a0" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="15220254-a6a9-44bb-a8b7-0445e6bd6051" >
+		<db:my-sql-connection host="Localhost" port="8081" user="srivani" password="Createit" database="test" />
+	</db:config>
+	<flow name="syncDBaccountsToCSV" doc:id="1986b4fe-ab85-4906-8dd1-3ca94aec1d89" >
+		<db:listener doc:name="On Table Row" doc:id="a6322b14-9326-44a5-83ef-5bf00510902d" config-ref="Database_Config">
+			<scheduling-strategy >
+				<cron />
+			</scheduling-strategy>
+		</db:listener>
+	</flow>
+	<flow name="tablerowoperationexampleFlow" doc:id="584d003a-50e0-4553-a7da-70118e9a6f09" >
+		<http:listener doc:name="Listener" doc:id="8fd94f83-6c63-4ab8-84bb-5fce5dba51d6" config-ref="HTTP_Listener_config" path="/syncData"/>
+		<logger level="INFO" doc:name="Logger" doc:id="16e18100-94d8-46bf-b72b-d36754bcf4f3" />
+	</flow>
+</mule>
