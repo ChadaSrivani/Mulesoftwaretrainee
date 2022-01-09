@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="983456fe-d3a7-4ac2-9561-69192c00dfcf" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="debugappFlow" doc:id="7d22cc16-b21c-4c49-af87-fb10aa8fe65d" >
+		<http:listener doc:name="Listener" doc:id="ac73c84f-ed6b-40aa-8540-f7f37df2d9ce" config-ref="HTTP_Listener_config" path="/Debugapp"/>
+		<set-payload value="/Debugapp" doc:name="Set Payload" doc:id="e531d786-b4d9-4b41-bbd9-fee3457a08ed" />
+		<logger level="INFO" doc:name="Logger" doc:id="274b14c0-9f48-4a71-b9cf-cb0ab2339857" />
+	</flow>
+</mule>
