@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="cd06d173-4706-4fc9-aa5e-70540369f997" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="translateFlow" doc:id="42bf9c89-3205-4673-adb1-2db4a753d359" >
+		<http:listener doc:name="Listener" doc:id="617a37b2-a23c-4c44-a05d-db5949b17ff9" config-ref="HTTP_Listener_config" path="/slack" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3721266e-4e84-4164-98a9-63d8bac98512" message="#[payload.text]"/>
+		<set-variable value="#[%dw 2.0&#10;output application/json&#10;---&#10;payload.text]" doc:name="text To Translate" doc:id="d9d829c9-1a51-47d1-9bb7-fe037a20a08e" variableName="textToTranslate"/>
+		<http:request method="POST" doc:name="Request" doc:id="a24e5e0d-7965-4f7c-b49e-333467cae9ed" url="http://translateflow.us-e2.cloudhub.io/">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Ocp-Apim-Subscription-key" : "Value"
+}]]]></http:headers>
+		</http:request>
+		<set-variable value="#[payload]" doc:name="token" doc:id="823befc6-259f-4744-927f-0c28d90f7513" variableName="token"/>
+		<logger level="INFO" doc:name="Logger" doc:id="0b0f41cc-b2e3-4425-84f6-51a046e79572" message="#[vars.token]"/>
+		<http:request method="POST" doc:name="Request" doc:id="62f5d3db-0580-4b69-acf5-69df9838f6a0" url="http://translateflow.us-e2.cloudhub.io/">
+			<http:body ><![CDATA[#[%dw 2.0
+output application/json
+---
+[{
+	"Text":  "vars.textToTranslate"
+}]]]]></http:body>
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "Bearer"++vars.token
+}]]]></http:headers>
+		</http:request>
+		<ee:transform doc:name="Transform Message" doc:id="7f9eebb0-ad62-4f39-9f30-afc58773d3b2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload.translations[0].tex[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7b1b0c74-f2d8-4281-b3c2-ad2311ae1c7e" message="#[payload]"/>
+	</flow>
+</mule>
