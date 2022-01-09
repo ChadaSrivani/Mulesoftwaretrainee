@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="e7ef20f4-28f6-4364-b02f-67279b0dd52a" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="50105e15-1f05-4c4c-8d7b-ab0b4046d1d1" >
+		<file:connection workingDir="C:\" />
+	</file:config>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="788190f3-87de-49e4-a1c7-deb043be3492" expirationInterval="10" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="b0dbaa16-6d73-4225-95a1-4eb563fd32fa" >
+		<http:request-connection host="Localhost" port="8081" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="db71cbc7-7047-479d-b393-fc1cb72652f6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="storedataFlow" doc:id="128541e0-fe14-4e61-8d68-6aaa0c05f928" >
+		<http:listener doc:name="Listener" doc:id="033ffdc4-4808-4e69-873b-806872c45d92" config-ref="HTTP_Listener_config" path="/objectStore"/>
+		<set-variable value="#[attributes.queryparams.id]" doc:name="Set Variable" doc:id="cd797547-66cf-4a7d-802f-cfef7a2fe8ea" variableName="recordID"/>
+		<file:read doc:name="Read" doc:id="3e0129b1-35b5-4553-b175-2ae900ece63a" config-ref="File_Config" path="C:\dataaaaempl\dataem.csv"/>
+		<os:store doc:name="Store" doc:id="8fec7b36-bc15-4060-9532-fcf55cf4293f" key='#[vars.recordID default "all"]' objectStore="Object_store">
+			<os:value ><![CDATA[#[output application/json
+---
+if (vars.recordID !=null)
+payload filter ($.ID ==vars.recordID)
+else
+payload]]]></os:value>
+		</os:store>
+		<http:request method="GET" doc:name="Request" doc:id="d2518020-2d89-4c9f-b7ed-6cffcc2e246e" config-ref="HTTP_Request_configuration" path="/retriveData">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"id" : vars.recordID default "all"
+}]]]></http:query-params>
+		</http:request>
+	</flow>
+	<flow name="retrieveData" doc:id="592d4c74-bf95-43b0-9f13-07c39d163bc0" >
+		<http:listener doc:name="Listener" doc:id="a10afa0a-11dc-45bb-9ecb-8690b289f3a6" config-ref="HTTP_Listener_config1" path="/retriveData"/>
+		<os:retrieve doc:name="Retrieve" doc:id="f7af2f02-2eb6-463f-b9da-cadd74b35b93" key='#[attributes.queryParms.id default "all"]'>
+			<os:default-value ><![CDATA[there is no data available with paticular id]]></os:default-value>
+		</os:retrieve>
+		<set-payload value="#[output application/json&#10;---&#10;payload]" doc:name="Set Payload" doc:id="8f623a6b-86a2-43f6-9b81-069cc0d45026" />
+	</flow>
+</mule>
