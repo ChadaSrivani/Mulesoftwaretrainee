@@ -1,0 +1,33 @@
+[{
+  
+          "Eid":4000,
+          "Ename":"sri",
+          "Esal":30000,
+          "ERole": "Associate professional software",
+          "Enum":345678912
+          
+        },
+        {
+  
+          "Eid":4001,
+          "Ename":"srivani",
+          "Esal":30000,
+          "ERole": "Marketing",
+          "Enum":456789123
+          
+        },
+        {
+  
+          "Eid":4002,
+          "Ename":"srinidhi",
+          "Esal":30000,
+          "ERole": "Finance",
+          "Enum":567891234
+          
+        }
+]
+      
+      
+
+      
+         
